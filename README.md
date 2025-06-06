@@ -178,7 +178,7 @@ You can easily extend or modify the agent's behavior:
 - **Model**: Change the underlying model in [`model.py`](./agent/llm/model.py) by modifying the `MODEL_NAME` variable.
 
 - **Add your own tools**:
-  1. **Define**: Create a new Python class in `tools/` that inherits from `Tool` in [`base.py`](./tools/base.py). Put your logic in the `run` method.
+  1. **Define**: Create a new Python class in [`tools/`](./tools/) that inherits from `Tool` in [`base.py`](./tools/base.py). Put your logic in the `run` method.
   2. **Register**: Import and register the tool class in [`runner.py`](./agent/tooling/runner.py), so the controller can call it when needed.
   3. **Describe**: Add the new tool definition to [`ollama_tools.json`](./configs/ollama_tools.json), so the model is aware of it and can use it in tool calls.
 
