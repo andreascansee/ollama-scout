@@ -1,0 +1,36 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "search_ollama_models",
+      "description": "Searches the Ollama model library for models matching a given query.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The search term for the model, e.g. 'gemma' or 'llava'."
+          }
+        },
+        "required": ["query"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "fetch_ollama_metadata",
+      "description": "Fetches detailed metadata for a model using the exact URL (string) from ollama.com. The key must be 'url'.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "The full URL of the model detail page on ollama.com."
+          }
+        },
+        "required": ["url"]
+      }
+    }
+  }
+]
