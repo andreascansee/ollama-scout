@@ -1,7 +1,7 @@
-from agent.model import query_model
-from agent.prompts import build_initial_prompt, build_followup_prompt, build_final_prompt
-from agent.tool_parser import extract_tool_call
-from agent.tool_registry import call_tool
+from agent.llm.model import query_model
+from agent.llm.prompts import build_initial_prompt, build_followup_prompt, build_final_prompt
+from agent.tooling.parser import extract_tool_call
+from agent.tooling.runner import dispatch_tool_call
 import json
 
 def is_duplicate_tool_call(name: str, arguments: dict, previous_calls: list[tuple[str, dict]]) -> bool:
@@ -18,7 +18,7 @@ def run_agent_loop(user_query: str, tools_json: str) -> str:
     
     Behavior:
     - Starts with initial prompt
-    - Sends up to 5 tool-related steps (model + tool call + new prompt)
+    - Iteratively performs up to 4 reasoning steps: generate tool call → execute tool → update prompt with tool output
     - Avoids duplicate tool calls with same arguments
     - At the end, sends a final prompt to generate a natural-language answer
 
@@ -31,7 +31,7 @@ def run_agent_loop(user_query: str, tools_json: str) -> str:
     """
     tool_outputs = []  # [(tool_name, output_text), ...]
     tool_calls = []    # [(tool_name, arguments_dict), ...]
-    max_steps = 4
+    max_steps = 4      # 1 search step + up to 3 fetch steps
 
     current_prompt = build_initial_prompt(user_query, tools_json)
 
@@ -64,7 +64,7 @@ def run_agent_loop(user_query: str, tools_json: str) -> str:
 
         # Call the tool and handle errors
         try:
-            tool_result = call_tool(tool_call)
+            tool_result = dispatch_tool_call(tool_call)
         except Exception as e:
             print(f"\n❌ Tool '{tool_name}' failed: {e}")
             return f"[ERROR] Tool failed: {e}"

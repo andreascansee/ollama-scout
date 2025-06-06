@@ -1,9 +1,9 @@
 import json
-from agent.engine import run_agent_loop
+from agent.controller import run_agent_loop
 
 def main():
     # Load the available tools from the JSON file and pretty-print the structure
-    with open("tools/ollama_tools.json") as f:
+    with open("configs/ollama_tools.json") as f:
         tools_json = json.dumps(json.load(f), indent=2)
 
     # Prompt the user to enter their question

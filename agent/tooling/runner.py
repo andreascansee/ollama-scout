@@ -1,9 +1,9 @@
-from tools.tool_base import Tool
+from tools.base import Tool
 from tools.search import SearchOllamaModels
 from tools.fetch import FetchOllamaMetadata
 
 # Instantiate and register all available tools
-REGISTERED_TOOLS: dict[str, Tool] = {
+TOOL_REGISTRY: dict[str, Tool] = {
     tool.name: tool for tool in [
         SearchOllamaModels(),
         FetchOllamaMetadata(),
@@ -11,7 +11,7 @@ REGISTERED_TOOLS: dict[str, Tool] = {
     ]
 }
 
-def call_tool(tool_call: dict) -> str:
+def dispatch_tool_call(tool_call: dict) -> str:
     """
     Executes the appropriate tool function based on the tool_call input.
 
@@ -27,7 +27,7 @@ def call_tool(tool_call: dict) -> str:
     name = tool_call.get("name")
     args = tool_call.get("arguments", {})
 
-    tool = REGISTERED_TOOLS.get(name)
+    tool = TOOL_REGISTRY.get(name)
     if not tool:
         return f"[ERROR] Unknown tool: {name}"
 

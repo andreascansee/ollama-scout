@@ -15,7 +15,6 @@ def build_initial_prompt(user_query: str, tools_json: str) -> str:
         "Do NOT ask the user to clarify. Pick the best-fitting tool and use it directly.\n"
     )
 
-
 def build_followup_prompt(user_query: str, tool_outputs: list[tuple[str, str]]) -> str:
     tool_sections = "\n\n".join(
         f"--- Result from {tool_name} ---\n{output}" for tool_name, output in tool_outputs

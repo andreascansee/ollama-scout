@@ -1,4 +1,4 @@
-from tools.tool_base import Tool
+from tools.base import Tool
 import requests
 from bs4 import BeautifulSoup
 
