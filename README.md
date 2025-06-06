@@ -98,10 +98,12 @@ Despite `qwen2.5:14b` having no built-in knowledge of DeepSeek, the agent was ab
 ```
 
 ### ▶️ Entry Point
-- [`run_agent.py`](./run_agent.py) is the entry point of the application
-- It loads tool definitions from [`ollama_tools.json`](./configs/ollama_tools.json) and executes the main agent logic via the `run_agent_loop` function in [`controller.py`](./agent/controller.py)
 
-### 🔁 Agent Loop (Engine)
+- [`run_agent.py`](./run_agent.py) is the entry point of the application
+- It loads tool definitions from [`ollama_tools.json`](./configs/ollama_tools.json) — which are used **only for prompt construction**, not for tool execution logic — and executes the main agent logic via the `run_agent_loop` function in [`controller.py`](./agent/controller.py)
+
+### 🔁 Agent Control Loop 
+
 - Defined in [`controller.py`](./agent/controller.py), the loop performs multi-step reasoning
 - Prompts are sent to the model step by step, with a **maximum of 4 iterations**:
   - One **initial search**
@@ -111,7 +113,7 @@ Despite `qwen2.5:14b` having no built-in knowledge of DeepSeek, the agent was ab
     - If no such block is found, the response is returned as-is and the loop ends
 - If a tool call is found:
     - It is **parsed** using `extract_tool_call()` from [`parser.py`](./agent/tooling/parser.py)
-    - Then **dispatched** using `dispatch_tool_call()` from [`runner.py`](./agent/tooling/runner.py)
+    - Then **executed** using `dispatch_tool_call()` from [`runner.py`](./agent/tooling/runner.py)
     - **Duplicate tool calls** (same tool name + same arguments) are **skipped** to avoid redundancy
 - The **result of each tool call** is fed back into the next prompt using `build_followup_prompt()` — so the model builds context with every step
 - After the loop completes, a **final prompt** is sent to produce a natural-language answer from all collected tool results
@@ -120,12 +122,12 @@ Despite `qwen2.5:14b` having no built-in knowledge of DeepSeek, the agent was ab
 
 - Tools are located in the [`tools/`](./tools/) directory
 - Each tool is implemented as a class 
-    - `SearchOllamaModels` in `search.py`
-    - `FetchOllamaMetadata` in `fetch.py`
+    - `SearchOllamaModels` in [`search.py`](./tools/search.py)
+    - `FetchOllamaMetadata` in [`fetch.py`](./tools/fetch.py)
 - All tools must inherit from the `Tool` base class defined in [`base.py`](./tools/base.py) and implement the following:
     - A `name` property used for dispatch
     - A `run()` method, which encapsulates the tool's logic
-- This shared interface allows all tools to be executed generically via `tool.run(args)` without the engine needing to know their internal behavior
+- This shared interface allows all tools to be executed generically via `tool.run(args)` without the controller needing to know their internal behavior
 
 ### 🪪 Tool Registry
 
@@ -177,8 +179,8 @@ You can easily extend or modify the agent's behavior:
 
 - **Add your own tools**:
   1. **Define**: Create a new Python class in `tools/` that inherits from `Tool` in [`base.py`](./tools/base.py). Put your logic in the `run` method.
-  2. **Register**: Import and register the tool class in [`runner.py`](./agent/tooling/runner.py) so the engine can call it when needed.
-  3. **Describe**: Add the new tool definition to [`ollama_tools.json`](./configs/ollama_tools.json) so the model is aware of it and can use it in tool calls.
+  2. **Register**: Import and register the tool class in [`runner.py`](./agent/tooling/runner.py), so the controller can call it when needed.
+  3. **Describe**: Add the new tool definition to [`ollama_tools.json`](./configs/ollama_tools.json), so the model is aware of it and can use it in tool calls.
 
 
 ## 🧪 Testing
