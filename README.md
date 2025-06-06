@@ -192,10 +192,11 @@ python -m tests.test_fetch   # Runs the fetch tool, saves pages to `ollama_docs/
 ```
 > ℹ️ Using `-m` runs the module as a script, which ensures proper resolution of relative imports inside the tests package.
 
-This is useful for debugging tool logic or collecting fresh data before a full agent run.
+This can be useful for debugging tool logic or collecting fresh data.
 
 ## ⚙️ Alternative: Use subprocess (no HTTP API)
-If you want to avoid running the Ollama HTTP server, you can call the model directly via the command line using `subprocess`. Note: This avoids the HTTP API, but **Ollama still needs to be installed locally and accessible via CLI**.
+If you want to avoid running the Ollama HTTP server, you can call the model directly via the command line using `subprocess`.
+> Note: This avoids the HTTP API, but **Ollama still needs to be installed locally and accessible via CLI**.
 
 To switch to this mode, replace the contents of [`model.py`](./agent/llm/model.py) with the following:
 
