@@ -2,7 +2,7 @@ import json
 from agent.engine import run_agent_loop
 
 def main():
-    # Load the available tools from the JSON file and pretty-print the structure
+    # Load tool definitions and reformat them as pretty JSON string for model input
     with open("configs/ollama_tools.json") as f:
         tools_json = json.dumps(json.load(f), indent=2)
 
