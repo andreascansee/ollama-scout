@@ -74,7 +74,7 @@ Despite `qwen2.5:14b` having no built-in knowledge of DeepSeek, the agent was ab
 .
 ├── agent
 │   ├── __init__.py
-│   ├── controller.py
+│   ├── engine.py
 │   ├── llm
 │   │   ├── model.py
 │   │   └── prompts.py
@@ -100,11 +100,11 @@ Despite `qwen2.5:14b` having no built-in knowledge of DeepSeek, the agent was ab
 ### ▶️ Entry Point
 
 - [`run_agent.py`](./run_agent.py) is the entry point of the application
-- It loads tool definitions from [`ollama_tools.json`](./configs/ollama_tools.json) — which are used **only for prompt construction**, not for tool execution logic — and executes the main agent logic via the `run_agent_loop` function in [`controller.py`](./agent/controller.py)
+- It loads tool definitions from [`ollama_tools.json`](./configs/ollama_tools.json) — which are used **only for prompt construction**, not for tool execution logic — and executes the main agent logic via the `run_agent_loop` function in [`engine.py`](./agent/engine.py)
 
-### 🔁 Agent Control Loop 
+### 🔁 Agent Reasoning Engine
 
-- Defined in [`controller.py`](./agent/controller.py), the loop performs multi-step reasoning
+- Defined in [`engine.py`](./agent/engine.py), the loop performs multi-step reasoning
 - Prompts are sent to the model step by step, with a **maximum of 4 iterations**:
   - One **initial search**
   - Up to **three metadata fetches**
@@ -127,7 +127,7 @@ Despite `qwen2.5:14b` having no built-in knowledge of DeepSeek, the agent was ab
 - All tools must inherit from the `Tool` base class defined in [`base.py`](./tools/base.py) and implement the following:
     - A `name` property used for dispatch
     - A `run()` method, which encapsulates the tool's logic
-- This shared interface allows all tools to be executed generically via `tool.run(args)` without the controller needing to know their internal behavior
+- This shared interface allows all tools to be executed generically via `tool.run(args)` without the engine needing to know their internal behavior
 
 ### 🪪 Tool Registry
 
@@ -179,7 +179,7 @@ You can easily extend or modify the agent's behavior:
 
 - **Add your own tools**:
   1. **Define**: Create a new Python class in [`tools/`](./tools/) that inherits from `Tool` in [`base.py`](./tools/base.py). Put your logic in the `run` method.
-  2. **Register**: Import and register the tool class in [`runner.py`](./agent/tooling/runner.py), so the controller can call it when needed.
+  2. **Register**: Import and register the tool class in [`runner.py`](./agent/tooling/runner.py), so the engine can call it when needed.
   3. **Describe**: Add the new tool definition to [`ollama_tools.json`](./configs/ollama_tools.json), so the model is aware of it and can use it in tool calls.
 
 
